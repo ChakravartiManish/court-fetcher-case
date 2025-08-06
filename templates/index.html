@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delhi High Court Case Lookup</title>
+    <title>Delhi District Courts Case Lookup</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Delhi High Court Case Lookup</h1>
-            <p>Search for case details and orders</p>
+            <h1>Delhi District Courts Case Lookup</h1>
+            <p>Search for case details and orders from Delhi District Courts</p>
         </header>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -54,8 +54,8 @@
         </form>
         
         <footer>
-            <p>Note: This service retrieves public information from Delhi High Court website.</p>
-            <p><a href="{{ url_for('history') }}">View Search History</a></p>
+            <p>Note: This service retrieves public information from Delhi District Courts website.</p>
+            <p><a href="{{ url_for('history') }}">View Search History</a> | <a href="{{ url_for('export_history') }}">Export History (CSV)</a></p>
         </footer>
     </div>
 </body>

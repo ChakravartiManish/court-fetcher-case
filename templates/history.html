@@ -3,65 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Case History - Delhi High Court Lookup</title>
+    <title>Case History - Delhi District Courts Lookup</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .status-success { color: #27ae60; font-weight: bold; }
+        .status-failed { color: #e74c3c; font-weight: bold; }
+        .status-pending { color: #f39c12; font-weight: bold; }
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .badge-success { background-color: #d4edda; color: #155724; }
+        .badge-failed { background-color: #f8d7da; color: #721c24; }
+        .badge-pending { background-color: #fff3cd; color: #856404; }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Case Search History</h1>
-            <a href="{{ url_for('index') }}" class="back-button">New Search</a>
+            <div class="header-buttons">
+                <a href="{{ url_for('index') }}" class="back-button">New Search</a>
+                <a href="{{ url_for('export_history') }}" class="back-button">Export CSV</a>
+            </div>
         </header>
         
         {% if queries %}
             <section class="history-section">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2>Previous Searches</h2>
-                    <a href="{{ url_for('export_history') }}" class="search-button" style="width: auto; padding: 10px 20px;">Export to CSV</a>
-                </div>
+                <h2>All Search Queries ({{ queries|length }} total)</h2>
                 <table>
                     <thead>
                         <tr>
-                            <th>Case Type</th>
-                            <th>Case Number</th>
-                            <th>Filing Year</th>
+                            <th>Case Details</th>
                             <th>Search Date</th>
+                            <th>Status</th>
                             <th>Parties</th>
                             <th>Key Dates</th>
-                            <th>Actions</th>
+                            <th>Documents</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for query in queries %}
                             <tr>
-                                <td>{{ query.case_type }}</td>
-                                <td>{{ query.case_number }}</td>
-                                <td>{{ query.filing_year }}</td>
+                                <td>
+                                    <strong>{{ query.case_type }} {{ query.case_number }}/{{ query.filing_year }}</strong>
+                                </td>
                                 <td>{{ query.query_time.strftime('%Y-%m-%d %H:%M') }}</td>
                                 <td>
-                                    {% if query.parties %}
-                                        {% for party in query.parties[:2] %}
-                                            {{ party.name }}<br>
-                                        {% endfor %}
-                                        {% if query.parties|length > 2 %}
-                                            <em>+{{ query.parties|length - 2 }} more</em>
-                                        {% endif %}
+                                    {% if query.status == 'success' %}
+                                        <span class="status-badge badge-success">Success</span>
+                                    {% elif query.status == 'failed' %}
+                                        <span class="status-badge badge-failed">Failed</span>
                                     {% else %}
-                                        <em>No parties data</em>
+                                        <span class="status-badge badge-pending">{{ query.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if query.parties %}
+                                        <ul style="margin: 0; padding-left: 15px;">
+                                            {% for party in query.parties %}
+                                                <li><strong>{{ party.type }}:</strong> {{ party.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <em>No parties information</em>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if query.dates %}
-                                        {% for key, value in query.dates.items() %}
-                                            {{ key.replace('_', ' ')|title }}: {{ value }}<br>
+                                        {% for date_type, date_value in query.dates.items() %}
+                                            <strong>{{ date_type.replace('_', ' ')|title }}:</strong> {{ date_value }}<br>
                                         {% endfor %}
                                     {% else %}
-                                        <em>No dates data</em>
+                                        <em>No dates available</em>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a href="{{ url_for('index') }}?case_type={{ query.case_type }}&case_number={{ query.case_number }}&filing_year={{ query.filing_year }}" 
-                                       class="doc-link">Re-search</a>
+                                    {% if query.pdf_links %}
+                                        <ul style="margin: 0; padding-left: 15px;">
+                                            {% for doc in query.pdf_links %}
+                                                <li><a href="{{ doc.url }}" target="_blank">{{ doc.title }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <em>No documents</em>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -71,9 +99,14 @@
         {% else %}
             <section class="history-section">
                 <h2>No Search History</h2>
-                <p>You haven't searched for any cases yet. <a href="{{ url_for('index') }}">Start a new search</a>.</p>
+                <p>You haven't made any case searches yet.</p>
+                <a href="{{ url_for('index') }}" class="search-button">Start Your First Search</a>
             </section>
         {% endif %}
+        
+        <footer style="margin-top: 40px; text-align: center; padding-top: 20px; border-top: 1px solid #eee;">
+            <p><a href="{{ url_for('index') }}">← Back to Search</a></p>
+        </footer>
     </div>
 </body>
 </html>
