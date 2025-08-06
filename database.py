@@ -14,11 +14,11 @@ class CaseQuery(Base):
     case_number = Column(String(50))
     filing_year = Column(Integer)
     query_time = Column(DateTime, default=datetime.utcnow)
-    raw_response = Column(Text)
+    raw_response = Column(Text)  # Store the complete HTML response
     status = Column(String(20))  # 'success', 'failed', 'pending'
-    parties = Column(JSON)  # Store parties information as JSON
-    dates = Column(JSON)    # Store dates information as JSON
-    pdf_links = Column(JSON) # Store PDF links as JSON
+    parties = Column(Text)       # Store parties information as JSON string
+    dates = Column(Text)         # Store dates information as JSON string
+    pdf_links = Column(Text)     # Store PDF links as JSON string
     
     def __repr__(self):
         return f"<CaseQuery({self.case_type}/{self.case_number}/{self.filing_year})>"
@@ -28,4 +28,4 @@ def init_db():
     engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
     Base.metadata.create_all(engine)
     SessionLocal = sessionmaker(bind=engine)
-    return SessionLocal  # ✅ Return sessionmaker object
+    return SessionLocal

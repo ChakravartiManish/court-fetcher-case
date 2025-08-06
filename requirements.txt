@@ -5,3 +5,4 @@ SQLAlchemy==2.0.35
 selenium==4.34.2
 Pillow==11.3.0
 pytesseract==0.3.13
+webdriver-manager==4.0.1
