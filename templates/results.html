@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Details - {{ case_number }}/{{ filing_year }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Case Details</h1>
+            <div class="header-buttons">
+                <a href="{{ url_for('index') }}" class="back-button">New Search</a>
+                <a href="{{ url_for('history') }}" class="back-button">Search History</a>
+            </div>
+        </header>
+        
+        <div class="case-header">
+            <h2>{{ case_type }} Case No. {{ case_number }} of {{ filing_year }}</h2>
+        </div>
+        
+        <section class="case-section">
+            <h3>Parties Information</h3>
+            {% if details.parties %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for party in details.parties %}
+                            <tr>
+                                <td>{{ party.name }}</td>
+                                <td>{{ party.type }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-data">No parties information available.</p>
+            {% endif %}
+        </section>
+        
+        <section class="case-section">
+            <h3>Important Dates</h3>
+            {% if details.dates %}
+                <table>
+                    <tbody>
+                        {% for date_type, date_value in details.dates.items() %}
+                            <tr>
+                                <th>{{ date_type.replace('_', ' ')|title }}:</th>
+                                <td>{{ date_value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-data">No dates information available.</p>
+            {% endif %}
+        </section>
+        
+        <section class="case-section">
+            <h3>Orders/Judgments</h3>
+            {% if details.pdf_links %}
+                <ul class="documents-list">
+                    {% for doc in details.pdf_links %}
+                        <li>
+                            {% if loop.first and details.pdf_path %}
+                                <a href="{{ url_for('download_pdf', filename=details.pdf_path) }}" class="doc-link">
+                                    {{ doc.title }} (Download)
+                                </a>
+                            {% else %}
+                                <a href="{{ doc.url }}" target="_blank" class="doc-link">
+                                    {{ doc.title }} (View Online)
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-data">No orders/judgments available for this case.</p>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

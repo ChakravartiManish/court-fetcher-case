@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case History - Delhi High Court Lookup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Case Search History</h1>
+            <a href="{{ url_for('index') }}" class="back-button">New Search</a>
+        </header>
+        
+        {% if queries %}
+            <section class="history-section">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Previous Searches</h2>
+                    <a href="{{ url_for('export_history') }}" class="search-button" style="width: auto; padding: 10px 20px;">Export to CSV</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Case Type</th>
+                            <th>Case Number</th>
+                            <th>Filing Year</th>
+                            <th>Search Date</th>
+                            <th>Parties</th>
+                            <th>Key Dates</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for query in queries %}
+                            <tr>
+                                <td>{{ query.case_type }}</td>
+                                <td>{{ query.case_number }}</td>
+                                <td>{{ query.filing_year }}</td>
+                                <td>{{ query.query_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    {% if query.parties %}
+                                        {% for party in query.parties[:2] %}
+                                            {{ party.name }}<br>
+                                        {% endfor %}
+                                        {% if query.parties|length > 2 %}
+                                            <em>+{{ query.parties|length - 2 }} more</em>
+                                        {% endif %}
+                                    {% else %}
+                                        <em>No parties data</em>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if query.dates %}
+                                        {% for key, value in query.dates.items() %}
+                                            {{ key.replace('_', ' ')|title }}: {{ value }}<br>
+                                        {% endfor %}
+                                    {% else %}
+                                        <em>No dates data</em>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('index') }}?case_type={{ query.case_type }}&case_number={{ query.case_number }}&filing_year={{ query.filing_year }}" 
+                                       class="doc-link">Re-search</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% else %}
+            <section class="history-section">
+                <h2>No Search History</h2>
+                <p>You haven't searched for any cases yet. <a href="{{ url_for('index') }}">Start a new search</a>.</p>
+            </section>
+        {% endif %}
+    </div>
+</body>
+</html>

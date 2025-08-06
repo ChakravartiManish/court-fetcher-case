@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delhi High Court Case Lookup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Delhi High Court Case Lookup</h1>
+            <p>Search for case details and orders</p>
+        </header>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="/" class="search-form">
+            <div class="form-group">
+                <label for="case_type">Case Type:</label>
+                <select id="case_type" name="case_type" required>
+                    <option value="">Select case type</option>
+                    {% for value, label in case_types %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="case_number">Case Number:</label>
+                <input type="text" id="case_number" name="case_number" required 
+                       placeholder="e.g., 1234">
+            </div>
+            
+            <div class="form-group">
+                <label for="filing_year">Filing Year:</label>
+                <select id="filing_year" name="filing_year" required>
+                    <option value="">Select year</option>
+                    {% for year in filing_years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button type="submit" class="search-button">Search Case</button>
+        </form>
+        
+        <footer>
+            <p>Note: This service retrieves public information from Delhi High Court website.</p>
+            <p><a href="{{ url_for('history') }}">View Search History</a></p>
+        </footer>
+    </div>
+</body>
+</html>

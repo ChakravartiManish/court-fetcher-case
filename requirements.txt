@@ -1,0 +1,7 @@
+Flask==2.3.2
+requests==2.31.0
+beautifulsoup4==4.12.2
+SQLAlchemy==2.0.35
+selenium==4.34.2
+Pillow==11.3.0
+pytesseract==0.3.13
